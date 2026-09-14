@@ -38,6 +38,10 @@ I care about architecture that survives its second year — real boundaries betw
 
 Building a **multi-tenant white-label SaaS** (.NET 8 + EF Core, background jobs, S3 storage, PDF generation) and a **Next.js 14 app on Cloudflare Workers** with i18n and an end-to-end Playwright suite.
 
+<!-- Stats: a instancia publica do github-readme-stats estava em 503 e o perfil
+     ainda nao tem repo publico com codigo, entao os cards mostrariam zero.
+     Para religar, basta descomentar este bloco.
+
 ## Stats
 
 <div align="center">
@@ -52,6 +56,7 @@ Building a **multi-tenant white-label SaaS** (.NET 8 + EF Core, background jobs,
 </picture>
 
 </div>
+-->
 
 <!-- Contato: descomente e preencha o que você quiser expor publicamente.
 ## Contact
