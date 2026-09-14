@@ -58,12 +58,10 @@ Building a **multi-tenant white-label SaaS** (.NET 8 + EF Core, background jobs,
 </div>
 -->
 
-<!-- Contato: descomente e preencha o que você quiser expor publicamente.
 ## Contact
 
-[![Email](https://img.shields.io/badge/Email-0d1117?style=flat-square&logo=gmail&logoColor=white)](mailto:SEU@EMAIL.COM)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0d1117?style=flat-square&logo=linkedin&logoColor=white)](https://linkedin.com/in/SEU-PERFIL)
--->
+[![Email](https://img.shields.io/badge/Email-0969da?style=for-the-badge&logoColor=white)](mailto:harlananjos@ai.facilitavitae.com.br)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/harlan-anjos-16a257286/)
 
 ---
 
