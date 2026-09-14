@@ -1,0 +1,8 @@
+# Este repo e gerado em Windows e consumido pelo renderer do GitHub em Linux.
+# Fixar LF evita que core.autocrlf reescreva os arquivos e suje todo diff.
+* text=auto eol=lf
+
+*.py   text eol=lf
+*.md   text eol=lf
+*.svg  text eol=lf
+*.yml  text eol=lf
