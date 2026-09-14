@@ -1,0 +1,34 @@
+name: assets
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Rebuild cards and README
+        run: python tools/build_readme.py
+
+      # Os SVGs e o README sao gerados e commitados. Se o que esta no repo nao
+      # bate com o que o gerador acabou de produzir, alguem editou a saida na
+      # mao -- e a proxima execucao do gerador ia apagar essa edicao em silencio.
+      - name: Fail if committed output is stale
+        run: |
+          if ! git diff --exit-code --stat; then
+            echo
+            echo "::error::A saida commitada divergiu do gerador."
+            echo "Rode 'python tools/build_readme.py' e commite o resultado."
+            exit 1
+          fi
+
+      - name: Validate SVGs and README references
+        run: python tools/check_assets.py
