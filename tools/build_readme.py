@@ -298,32 +298,101 @@ COPY = {
 }
 
 
+# --------------------------------------------------------------------- rotulos
+
+ROOT = os.path.dirname(OUT)
+EMAIL = 'harlananjos@ai.facilitavitae.com.br'
+LINKEDIN = 'https://www.linkedin.com/in/harlan-anjos-16a257286/'
+HEADER_LABEL = (u'Samui (@SamuiArashi) — .NET 8 APIs on the back, React and Next.js on the '
+                u'front. C#, ASP.NET Core, EF Core, TypeScript, Next.js, Cloudflare Workers.')
+CARDS = ('about', 'stack', 'how', 'now')
+
+
+def labels(c):
+    """Uma frase por card.
+
+    Vira o aria-label dentro do SVG e o alt da imagem no README, das mesmas
+    strings -- e por isso nao tem como um sair do ar em relacao ao outro.
+    """
+    return {
+        'about': c['about_t'] + u' — ' + u' '.join(c['about']),
+        'stack': c['stack_t'] + u' — ' + u'; '.join(
+            n + ': ' + ', '.join(i) for n, i in c['stack']),
+        'how': c['how_t'] + u' — ' + u' '.join(a + u' ' + b for a, b in c['how']),
+        'now': c['now_t'] + u' — ' + u' '.join(a + u': ' + b for a, b in c['now']),
+    }
+
+
+def picture(stem, alt, size='width="100%"', indent=''):
+    body = (
+        '<picture>\n'
+        '  <source media="(prefers-color-scheme: dark)" srcset="assets/%s-dark.svg">\n'
+        '  <source media="(prefers-color-scheme: light)" srcset="assets/%s-light.svg">\n'
+        '  <img alt="%s" src="assets/%s-light.svg" %s>\n'
+        '</picture>\n'
+    ) % (stem, stem, html.escape(alt, quote=True), stem, size)
+    if indent:
+        body = ''.join(indent + line if line.strip() else line
+                       for line in body.splitlines(True))
+    return body
+
+
+def render_readme():
+    en, pt = labels(COPY['en']), labels(COPY['pt'])
+    o = ['<div align="center">\n\n', picture('header', HEADER_LABEL), '\n<br>\n\n']
+    for k in CARDS:
+        o.append(picture('%s-en' % k, en[k]))
+        o.append('\n')
+    o.append('<br>\n\n')
+    o.append('<a href="mailto:%s">\n%s</a>\n' % (
+        EMAIL, picture('contact-email', 'Email: ' + EMAIL, 'height="46"', '  ')))
+    o.append('<a href="%s">\n%s</a>\n' % (
+        LINKEDIN, picture('contact-linkedin', 'LinkedIn: harlan-anjos', 'height="46"', '  ')))
+    o.append('\n<br><br>\n\n<details>\n')
+    o.append('<summary><b>&nbsp;\U0001f1e7\U0001f1f7&nbsp; Em português &nbsp;</b></summary>\n<br>\n\n')
+    for k in CARDS:
+        o.append(picture('%s-pt' % k, pt[k]))
+        o.append('\n')
+    o.append('</details>\n\n</div>\n\n')
+    o.append('<!--\n'
+             'Este arquivo e gerado. Nao edite na mao.\n\n'
+             'Todo o texto vive no dicionario COPY em tools/build_readme.py; os cards SVG e os\n'
+             'atributos alt saem das mesmas strings. Para mudar qualquer coisa, edite o COPY e\n'
+             'rode:\n\n'
+             '    python tools/build_readme.py\n\n'
+             'O workflow em .github/workflows/ falha se o que esta commitado divergir do que o\n'
+             'gerador produz.\n'
+             '-->\n')
+    return ''.join(o)
+
+
 # --------------------------------------------------------------------- build
 
-def write(name, content):
-    io.open(os.path.join(OUT, name), 'w', encoding='utf-8', newline='\n').write(content)
-    print('%-28s %6d bytes' % (name, len(content.encode('utf-8'))))
+def write(path, content):
+    io.open(path, 'w', encoding='utf-8', newline='\n').write(content)
+    print('%-34s %6d bytes' % (os.path.relpath(path, ROOT).replace('\\', '/'),
+                               len(content.encode('utf-8'))))
 
 
 def main():
     if not os.path.isdir(OUT):
         os.makedirs(OUT)
     for theme, th in THEMES.items():
-        write('header-%s.svg' % theme, card_header(th))
-        write('contact-email-%s.svg' % theme, badge(th, 'Email', 'email'))
-        write('contact-linkedin-%s.svg' % theme, badge(th, 'LinkedIn', 'in'))
+        write(os.path.join(OUT, 'header-%s.svg' % theme), card_header(th))
+        write(os.path.join(OUT, 'contact-email-%s.svg' % theme), badge(th, 'Email', 'email'))
+        write(os.path.join(OUT, 'contact-linkedin-%s.svg' % theme), badge(th, 'LinkedIn', 'in'))
         for lang, c in COPY.items():
+            lab = labels(c)
             sfx = '%s-%s.svg' % (lang, theme)
-            write('about-' + sfx, card_text(th, c['about_t'], c['about'], ' '.join(c['about'])))
-            write('stack-' + sfx, card_stack(
-                th, c['stack_t'], c['stack'],
-                c['stack_t'] + ': ' + '; '.join(n + ': ' + ', '.join(i) for n, i in c['stack'])))
-            write('how-' + sfx, card_list(
-                th, c['how_t'], c['how'],
-                c['how_t'] + ': ' + ' '.join(a + ' ' + b for a, b in c['how'])))
-            write('now-' + sfx, card_list(
-                th, c['now_t'], c['now'],
-                c['now_t'] + ': ' + ' '.join(a + ' — ' + b for a, b in c['now'])))
+            write(os.path.join(OUT, 'about-' + sfx),
+                  card_text(th, c['about_t'], c['about'], lab['about']))
+            write(os.path.join(OUT, 'stack-' + sfx),
+                  card_stack(th, c['stack_t'], c['stack'], lab['stack']))
+            write(os.path.join(OUT, 'how-' + sfx),
+                  card_list(th, c['how_t'], c['how'], lab['how']))
+            write(os.path.join(OUT, 'now-' + sfx),
+                  card_list(th, c['now_t'], c['now'], lab['now']))
+    write(os.path.join(ROOT, 'README.md'), render_readme())
 
 
 if __name__ == '__main__':
